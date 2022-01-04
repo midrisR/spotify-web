@@ -10,7 +10,8 @@ const initialState = {
 	albums: null,
 	artists: null,
 	loading: true,
-	play: false,
+	play: '',
+	status: '',
 	device: null,
 	playingInfo: null,
 	position: 0,
@@ -227,20 +228,6 @@ export const GlobalProvider = ({ children }) => {
 	};
 
 	// PLAYER
-	const playSong = (song) => {
-		dispatch({
-			type: 'SET_SONG',
-			payload: song,
-		});
-	};
-
-	const setPlay = (data) => {
-		dispatch({
-			type: 'PLAY',
-			payload: data,
-		});
-	};
-
 	const PlayTrack = async (type, id, url, position) => {
 		try {
 			await axios.put(
@@ -262,8 +249,9 @@ export const GlobalProvider = ({ children }) => {
 				}
 			);
 			dispatch({
-				type: 'PLAY',
+				type: 'RESUME',
 				payload: true,
+				status: 'play',
 			});
 		} catch (error) {
 			console.log('PlayTrack', error);
@@ -284,13 +272,29 @@ export const GlobalProvider = ({ children }) => {
 				}
 			);
 			dispatch({
-				type: 'PLAY',
+				type: 'PAUSE',
 				payload: false,
+				status: 'pause',
 			});
 		} catch (error) {
 			console.log('pausedTrack', error.message);
 		}
 	};
+
+	const playSong = (song) => {
+		dispatch({
+			type: 'SET_SONG',
+			payload: song,
+		});
+	};
+
+	const setPlay = (data) => {
+		dispatch({
+			type: 'PLAY',
+			payload: data,
+		});
+	};
+
 	const setPosition = (ms) => {
 		dispatch({
 			type: 'POSITION',
@@ -395,6 +399,7 @@ export const GlobalProvider = ({ children }) => {
 				tracks: state.tracks,
 				song: state.song,
 				play: state.play,
+				status: state.status,
 				device: state.device,
 				playingInfo: state.playingInfo,
 				position: state.position,

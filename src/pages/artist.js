@@ -8,13 +8,11 @@ import { BsFillPlayFill, BsFillPauseFill } from 'react-icons/bs';
 import styled from 'styled-components';
 const Header = styled.div`
 	background-image: linear-gradient(to left, ${(props) => props.color});
-	width: 100%;
-	height: 400px;
 	border-radius: 1rem;
 	position: relative;
 	display: flex;
 	align-items: center;
-	padding: 0 1.5rem;
+	padding: 2rem 1.5rem;
 `;
 
 const Artist = () => {
@@ -33,7 +31,6 @@ const Artist = () => {
 	} = useContext(GlobalContext);
 	const [color, setColor] = useState([]);
 	const { id } = useParams();
-
 	const getColors = (colors) => {
 		setColor(colors);
 	};
@@ -69,24 +66,25 @@ const Artist = () => {
 		});
 		return b;
 	};
+
 	return (
 		<div className='w-full lg:w-8/12 bg-gray-800 py-6 px-6 rounded-3xl'>
 			{artist && (
-				<Header color={gradient(color)}>
-					<div className='flex items-end'>
-						<div className='overflow-hidden rounded-2xl'>
+				<Header color={gradient(color)} className='w-full mx-auto'>
+					<div className='w-full xs:block md:flex items-end'>
+						<div className='sm:w-full md:w-auto overflow-hidden rounded-2xl'>
 							<ColorExtractor getColors={getColors}>
 								<img src={artist.images[1].url} alt='' />
 							</ColorExtractor>
 						</div>
-						<div className='flex flex-col ml-6'>
+						<div className='flex flex-col md:ml-6 mt-4 md:mt-0'>
 							<div className='flex items-center'>
 								<MdVerified color='#3b82f6' size={28} />
 								<span className='text-white font-semibold ml-2'>
 									Verified Artist
 								</span>
 							</div>
-							<h1 className='text-white text-8xl font-black'>
+							<h1 className='text-white text-8xl lg:text-9xl font-black'>
 								{artist.name}
 							</h1>
 							<p className='text-white text-base font-light ml-1 mt-2'>
@@ -99,9 +97,7 @@ const Artist = () => {
 			{topTrackArtist !== null && (
 				<div className='w-full'>
 					<div className='flex items-center mt-6 px-4'>
-						<div
-							className='justify-center rounded-full bg-green-500 w-16 h-16 p-4 cursor-pointer'
-							onClick={() => playSong(allUri())}>
+						<div className='justify-center rounded-full bg-green-500 w-16 h-16 p-4 cursor-pointer'>
 							{play ? (
 								<BsFillPauseFill
 									size={36}
@@ -112,7 +108,11 @@ const Artist = () => {
 								<BsFillPlayFill
 									size={36}
 									color='#fff'
-									onClick={handlePause}
+									onClick={
+										play !== ''
+											? handlePause
+											: () => playSong(allUri())
+									}
 								/>
 							)}
 						</div>

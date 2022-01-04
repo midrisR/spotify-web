@@ -6,10 +6,11 @@ const Search = () => {
 	const { handleSearch, artists, tracks, relatedArtists, getRelatedArtists } =
 		useContext(GlobalContext);
 
-	useEffect(async () => {
+	useEffect(() => {
 		if (artists !== null) {
-			await getRelatedArtists(artists[0].id);
+			getRelatedArtists(artists[0].id);
 		}
+		// eslint-disable-next-line
 	}, [artists]);
 	return (
 		<>
@@ -54,10 +55,10 @@ const Search = () => {
 					</h1>
 					<div className='flex flex-wrap'>
 						{relatedArtists.artists.slice(0, 4).map((artist, i) => (
-							<div className='w-1/4 p-4'>
+							<div className='w-1/2 md:w-1/4 p-2 md:p-3' key={i}>
 								<div className='overflow-hidden rounded-2xl'>
 									<img
-										src={artist.images[0].url}
+										src={artist.images[1].url}
 										alt={artist.name}
 									/>
 								</div>

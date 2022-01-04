@@ -32,7 +32,7 @@ const Wrapper = styled.div`
 
 const Progess = styled.div`
 	width: ${(props) => props.widthPro || 0};
-	background-color: rgb(28, 185, 84);
+	background-color: rgb(17, 24, 39);
 	border-radius: 0px;
 	position: absolute;
 	height: 100%;
@@ -78,6 +78,7 @@ const Playing = ({ url }) => {
 		getCurrentlyPlaying,
 		progress_ms,
 		getDevice,
+		status,
 	} = useContext(GlobalContext);
 
 	const handlePause = () => {

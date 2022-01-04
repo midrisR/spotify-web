@@ -61,6 +61,18 @@ export default (state, action) => {
 				...state,
 				play: action.payload,
 			};
+		case 'RESUME':
+			return {
+				...state,
+				play: action.payload,
+				status: action.status,
+			};
+		case 'PAUSE':
+			return {
+				...state,
+				play: action.payload,
+				status: action.status,
+			};
 		case 'POSITION':
 			return {
 				...state,
