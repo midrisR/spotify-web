@@ -51,10 +51,16 @@ export default (state, action) => {
 				tracks: action.payload,
 				loading: false,
 			};
+		case 'RECENTLY_PLAYING':
+			return {
+				...state,
+				recently: action.payload,
+			};
 		case 'SET_SONG':
 			return {
 				...state,
 				song: action.payload,
+				status: action.status,
 			};
 		case 'PLAY':
 			return {

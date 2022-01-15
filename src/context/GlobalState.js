@@ -11,7 +11,6 @@ const initialState = {
 	artists: null,
 	loading: true,
 	play: '',
-	status: '',
 	device: null,
 	playingInfo: null,
 	position: 0,
@@ -23,6 +22,7 @@ const initialState = {
 	categories: null,
 	topTrackArtist: null,
 	relatedArtists: null,
+	recently: null,
 	progress_ms: 0,
 };
 
@@ -33,7 +33,7 @@ export const GlobalContext = createContext(initialState);
 export const GlobalProvider = ({ children }) => {
 	const [state, dispatch] = useReducer(AppReducer, initialState);
 	const _token = getTokenFromUrl(window.location.hash);
-
+	const [status, setStatus] = React.useState('');
 	const isLogin = () => {
 		if (_token.access_token) {
 			const expiryTime = new Date().getTime() + _token.expires_in * 1000;
@@ -57,11 +57,15 @@ export const GlobalProvider = ({ children }) => {
 			console.log('getDevice', error);
 		}
 	};
-
+	const sortByPopularity = (data) =>
+		data.sort((firstEl, secondEl) => {
+			return secondEl.popularity - firstEl.popularity;
+		});
 	const handleSearch = async (e) => {
 		try {
+			const value = await e;
 			const data = await axios.get(
-				`https://api.spotify.com/v1/search?q=${e}&type=track%2Cartist%2Calbum&limit=5&offset=0`,
+				`https://api.spotify.com/v1/search?q=${value}&type=track%2Cartist%2Calbum&limit=5&offset=0`,
 				{
 					headers: {
 						Authorization: `Bearer ${localStorage.getItem(
@@ -71,10 +75,6 @@ export const GlobalProvider = ({ children }) => {
 					},
 				}
 			);
-			const sortByPopularity = (data) =>
-				data.sort((firstEl, secondEl) => {
-					return secondEl.popularity - firstEl.popularity;
-				});
 
 			dispatch({
 				type: 'ALBUMS',
@@ -227,6 +227,28 @@ export const GlobalProvider = ({ children }) => {
 		}
 	};
 
+	const RecentlyPlaying = async () => {
+		try {
+			const data = await axios.get(
+				' https://api.spotify.com/v1/me/player/recently-played?limit=1',
+				{
+					headers: {
+						Authorization: `Bearer ${localStorage.getItem(
+							'token'
+						)}`,
+						'Content-Type': 'application/json',
+					},
+				}
+			);
+			dispatch({
+				type: 'RECENTLY_PLAYING',
+				payload: data.data,
+			});
+		} catch (error) {
+			console.log(error);
+		}
+	};
+
 	// PLAYER
 	const PlayTrack = async (type, id, url, position) => {
 		try {
@@ -251,7 +273,6 @@ export const GlobalProvider = ({ children }) => {
 			dispatch({
 				type: 'RESUME',
 				payload: true,
-				status: 'play',
 			});
 		} catch (error) {
 			console.log('PlayTrack', error);
@@ -274,7 +295,6 @@ export const GlobalProvider = ({ children }) => {
 			dispatch({
 				type: 'PAUSE',
 				payload: false,
-				status: 'pause',
 			});
 		} catch (error) {
 			console.log('pausedTrack', error.message);
@@ -282,6 +302,7 @@ export const GlobalProvider = ({ children }) => {
 	};
 
 	const playSong = (song) => {
+		setStatus(typeof song !== 'object' ? 'single' : 'album');
 		dispatch({
 			type: 'SET_SONG',
 			payload: song,
@@ -293,6 +314,25 @@ export const GlobalProvider = ({ children }) => {
 			type: 'PLAY',
 			payload: data,
 		});
+	};
+
+	const skipToNext = async (type, device_ids) => {
+		try {
+			await axios.post(
+				`https://api.spotify.com/v1/me/player/${type}`,
+				{ device_ids: [device_ids] },
+				{
+					headers: {
+						Accept: 'application/json',
+						Authorization: `Bearer ${localStorage.getItem(
+							'token'
+						)}`,
+					},
+				}
+			);
+		} catch (error) {
+			console.log(error);
+		}
 	};
 
 	const setPosition = (ms) => {
@@ -399,11 +439,12 @@ export const GlobalProvider = ({ children }) => {
 				tracks: state.tracks,
 				song: state.song,
 				play: state.play,
-				status: state.status,
+				status: status,
 				device: state.device,
 				playingInfo: state.playingInfo,
 				position: state.position,
 				artist: state.artist,
+				recently: state.recently,
 				feature: state.feature,
 				newReleases: state.newReleases,
 				topTrackArtist: state.topTrackArtist,
@@ -415,6 +456,7 @@ export const GlobalProvider = ({ children }) => {
 				featuredPlaylists,
 				setPosition,
 				setPlay,
+				skipToNext,
 				isLogin,
 				handleSearch,
 				GetTopUserItems,
@@ -428,6 +470,7 @@ export const GlobalProvider = ({ children }) => {
 				transferPlayback,
 				getArtist,
 				getCurrentlyPlaying,
+				RecentlyPlaying,
 			}}>
 			{children}
 		</GlobalContext.Provider>

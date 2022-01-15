@@ -23,15 +23,8 @@ export default function DashboardLayout({ children }) {
 					<div className={style.mainContainer}>
 						<TopNavigation />
 						<main className={style.main}>
-							<div className='flex flex-wrap'>
-								{children}
-								{/* widget */}
-								<div className='w-full mt-8 lg:mt-0 lg:w-4/12 lg:pl-4'>
-									<div className='bg-gray-800 rounded-3xl px-3 py-3 relative'>
-										<Playing url={song} />
-									</div>
-								</div>
-							</div>
+							<div className='w-full'>{children}</div>
+							<Playing url={song} />
 						</main>
 					</div>
 				</div>

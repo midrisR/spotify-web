@@ -1,5 +1,6 @@
 import React, { useContext, useEffect } from 'react';
 import { GlobalContext } from '../context/GlobalState';
+import { Link } from 'react-router-dom';
 import Tracks from '../components/Tracks';
 import Artists from '../components/Artists';
 const Search = () => {
@@ -7,11 +8,10 @@ const Search = () => {
 		useContext(GlobalContext);
 
 	useEffect(() => {
-		if (artists !== null) {
-			getRelatedArtists(artists[0].id);
-		}
+		if (artists !== null) getRelatedArtists(artists !== undefined);
 		// eslint-disable-next-line
 	}, [artists]);
+
 	return (
 		<>
 			<div className='group items-center ml-0 md:ml-8 relative w-full flex lg:w-72 '>
@@ -57,12 +57,13 @@ const Search = () => {
 						{relatedArtists.artists.slice(0, 4).map((artist, i) => (
 							<div className='w-1/2 md:w-1/4 p-2 md:p-3' key={i}>
 								<div className='overflow-hidden rounded-2xl'>
-									<img
-										src={artist.images[1].url}
-										alt={artist.name}
-									/>
+									<Link to={`/artist/${artist.id}`}>
+										<img
+											src={artist.images[1].url}
+											alt={artist.name}
+										/>
+									</Link>
 								</div>
-
 								<p className='text-white text-xl font-bold my-3 px-2'>
 									{artist.name}
 								</p>

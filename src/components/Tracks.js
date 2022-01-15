@@ -5,7 +5,7 @@ import { FiPlayCircle, FiPause } from 'react-icons/fi';
 import ScaleLoader from 'react-spinners/ScaleLoader';
 
 const Tracks = ({ tracks }) => {
-	const { playSong, song, play } = useContext(GlobalContext);
+	const { playSong, playingInfo, play } = useContext(GlobalContext);
 	const [icon, setIcon] = useState(false);
 
 	const onHover = (id) => {
@@ -24,7 +24,7 @@ const Tracks = ({ tracks }) => {
 				{tracks.map((track, i) => (
 					<div
 						key={i}
-						className='flex justify-between items-center hover:bg-gray-900 hover:bg-opacity-40 hover:rounded-xl px-2 rounded-lg'
+						className='flex justify-between items-center hover:bg-gray-900 hover:bg-opacity-40 hover:rounded-xl px-2 rounded-lg cursor-pointer'
 						onClick={() => playSong(track.uri)}
 						onMouseEnter={() => onHover(i)}
 						onMouseLeave={() => leaveHover(i)}>
@@ -42,7 +42,8 @@ const Tracks = ({ tracks }) => {
 									width='50'
 								/>
 								<div className='absolute'>
-									{track.uri === song ? (
+									{playingInfo !== null &&
+									track.uri === playingInfo.uri ? (
 										play ? (
 											<FiPause className='text-opacity-20 transition duration-700 ease-in-out' />
 										) : (
@@ -65,7 +66,8 @@ const Tracks = ({ tracks }) => {
 							<div className='overflow-hidden'>
 								<p
 									className={`${
-										track.uri === song
+										playingInfo !== null &&
+										track.uri === playingInfo.uri
 											? 'text-active'
 											: 'text-white'
 									} ml-3 font-semibold text-sm`}>
@@ -77,13 +79,15 @@ const Tracks = ({ tracks }) => {
 							</div>
 						</div>
 						<div className='text-white text-xs font-semibold flex item-center'>
-							{track.uri === song && play && (
-								<ScaleLoader
-									color='#fff'
-									width={2}
-									height={15}
-								/>
-							)}
+							{playingInfo !== null &&
+								track.uri === playingInfo.uri &&
+								play && (
+									<ScaleLoader
+										color='#fff'
+										width={2}
+										height={15}
+									/>
+								)}
 							<span className='ml-4 text-white'>
 								{ToMinutes(track.duration_ms)}
 							</span>

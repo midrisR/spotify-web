@@ -4,6 +4,7 @@ import { FiPlay, FiPause, FiSkipBack, FiSkipForward } from 'react-icons/fi';
 import { MdRepeat, MdShuffle } from 'react-icons/md';
 import styled from 'styled-components';
 import image from '../images/disc.jpg';
+
 const Slider = styled.div`
 	display: flex;
 	position: relative;
@@ -32,7 +33,7 @@ const Wrapper = styled.div`
 
 const Progess = styled.div`
 	width: ${(props) => props.widthPro || 0};
-	background-color: rgb(17, 24, 39);
+	background-color: rgb(74 255 41);
 	border-radius: 0px;
 	position: absolute;
 	height: 100%;
@@ -79,6 +80,7 @@ const Playing = ({ url }) => {
 		progress_ms,
 		getDevice,
 		status,
+		skipToNext,
 	} = useContext(GlobalContext);
 
 	const handlePause = () => {
@@ -137,7 +139,6 @@ const Playing = ({ url }) => {
 					setPosition(state.position);
 					setPlay(!state.paused);
 				});
-
 				player.connect();
 			};
 		}
@@ -155,60 +156,50 @@ const Playing = ({ url }) => {
 		// eslint-disable-next-line
 	}, [song]);
 	return (
-		<div className='p-10 mx-auto'>
-			<div className='overflow-hidden rounded-xl w-1/2 mx-auto'>
-				{playingInfo !== null ? (
-					<img
-						src={playingInfo.album.images[0].url}
-						alt={playingInfo.name}
-					/>
-				) : (
-					<img src={image} alt='not playing' />
+		<div className='py-4 px-10 flex items-center bg-gray-800 mt-10 rounded-xl fixed w-11/12 bottom-2 z-10 shadow-xl'>
+			<div className='w-2/6 flex items-center'>
+				<div className='overflow-hidden rounded-xl'>
+					{playingInfo !== null ? (
+						<img
+							src={playingInfo.album.images[2].url}
+							alt={playingInfo.name}
+							className='w-20 rounded-xl'
+						/>
+					) : (
+						<img
+							src={image}
+							alt='not playing'
+							className='w-20 rounded-xl'
+						/>
+					)}
+				</div>
+				{playingInfo && (
+					<div className='text-white text-sm ml-5'>
+						<p className='font-semibold my-2'>{playingInfo.name}</p>
+						<p className='text-gray-300 text-xs'>
+							{playingInfo.artists[0].name}
+						</p>
+					</div>
 				)}
 			</div>
-			{playingInfo && (
-				<div className='bar-info'>
-					<p className='font-semibold text-white text-xl text-center my-2'>
-						{playingInfo.name}
-					</p>
-					<p className='text-base font-semibold text-white text-center'>
-						{playingInfo.artists[0].name}
-					</p>
-				</div>
-			)}
 
-			<Slider>
-				<Wrapper>
-					<Bar role='presentation'>
-						{playingInfo !== null && (
-							<>
-								<Progess
-									widthPro={
-										progress_ms !== undefined
-											? time(
-													(progress_ms * 100) /
-														playingInfo.duration_ms
-											  ) + '%'
-											: song !== url && 0
-									}></Progess>
-								<ProgressBar
-									role='presentation'
-									left={
-										progress_ms !== undefined
-											? time(
-													(progress_ms * 100) /
-														playingInfo.duration_ms
-											  ) + '%'
-											: song !== url && 0
-									}>
-									<Span
-										tabIndex='0'
-										role='slider'
-										aria-label='slider handle'
-										aria-orientation='horizontal'
-										aria-valuemin='0'
-										aria-valuenow='11.5'
-										aria-valuemax='100'
+			<div className='w-4/6'>
+				<Slider>
+					<Wrapper>
+						<Bar role='presentation'>
+							{playingInfo !== null && (
+								<>
+									<Progess
+										widthPro={
+											progress_ms !== undefined
+												? time(
+														(progress_ms * 100) /
+															playingInfo.duration_ms
+												  ) + '%'
+												: song !== url && 0
+										}></Progess>
+									<ProgressBar
+										role='presentation'
 										left={
 											progress_ms !== undefined
 												? time(
@@ -216,25 +207,90 @@ const Playing = ({ url }) => {
 															playingInfo.duration_ms
 												  ) + '%'
 												: song !== url && 0
-										}></Span>
-								</ProgressBar>
+										}>
+										<Span
+											tabIndex='0'
+											role='slider'
+											aria-label='slider handle'
+											aria-orientation='horizontal'
+											aria-valuemin='0'
+											aria-valuenow='11.5'
+											aria-valuemax='100'
+											left={
+												progress_ms !== undefined
+													? time(
+															(progress_ms *
+																100) /
+																playingInfo.duration_ms
+													  ) + '%'
+													: song !== url && 0
+											}></Span>
+									</ProgressBar>
+								</>
+							)}
+						</Bar>
+					</Wrapper>
+				</Slider>
+				<div className='flex justify-center px-4 py-3 lg:py-0 mt-4 2'>
+					<div
+						className={`w-full flex ${
+							status === ''
+								? 'justify-center'
+								: status === 'album'
+								? 'justify-between'
+								: 'justify-center'
+						}`}>
+						{play ? (
+							<>
+								{status !== 'single' && (
+									<>
+										<MdRepeat
+											color='#fff'
+											size={22}
+											className='cursor-pointer'
+										/>
+										<FiSkipBack
+											color='#fff'
+											size={22}
+											className='cursor-pointer'
+											onClick={() =>
+												skipToNext('previous', device)
+											}
+										/>
+									</>
+								)}
+								<FiPause
+									onClick={handlePause}
+									color='#fff'
+									size={22}
+									className='cursor-pointer'
+								/>
+								{status !== 'single' && (
+									<>
+										<FiSkipForward
+											color='#fff'
+											size={22}
+											className='cursor-pointer'
+											onClick={() =>
+												skipToNext('next', device)
+											}
+										/>
+										<MdShuffle
+											color='#fff'
+											size={22}
+											className='cursor-pointer'
+										/>
+									</>
+								)}
 							</>
+						) : (
+							<FiPlay
+								onClick={handlePause}
+								color='#fff'
+								size={22}
+							/>
 						)}
-					</Bar>
-				</Wrapper>
-			</Slider>
-
-			<div className='flex justify-center px-4 py-3 lg:py-0 mt-4'>
-				<div className='w-full flex justify-between '>
-					<MdRepeat color='#fff' size={22} />
-					<FiSkipBack color='#fff' size={22} />
-					{play ? (
-						<FiPause onClick={handlePause} color='#fff' size={22} />
-					) : (
-						<FiPlay onClick={handlePause} color='#fff' size={22} />
-					)}
-					<FiSkipForward color='#fff' size={22} />
-					<MdShuffle color='#fff' size={22} />
+					</div>
 				</div>
 			</div>
 		</div>

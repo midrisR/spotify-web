@@ -28,6 +28,7 @@ const Artist = () => {
 		pausedTrack,
 		position,
 		play,
+		status,
 	} = useContext(GlobalContext);
 	const [color, setColor] = useState([]);
 	const { id } = useParams();
@@ -74,7 +75,11 @@ const Artist = () => {
 					<div className='w-full xs:block md:flex items-end'>
 						<div className='sm:w-full md:w-auto overflow-hidden rounded-2xl'>
 							<ColorExtractor getColors={getColors}>
-								<img src={artist.images[1].url} alt='' />
+								<img
+									className='mx-auto rounded-2xl'
+									src={artist.images[1].url}
+									alt=''
+								/>
 							</ColorExtractor>
 						</div>
 						<div className='flex flex-col md:ml-6 mt-4 md:mt-0'>
@@ -84,7 +89,7 @@ const Artist = () => {
 									Verified Artist
 								</span>
 							</div>
-							<h1 className='text-white text-8xl lg:text-9xl font-black'>
+							<h1 className='text-white text-6xl lg:text-7xl font-black'>
 								{artist.name}
 							</h1>
 							<p className='text-white text-base font-light ml-1 mt-2'>
@@ -98,22 +103,34 @@ const Artist = () => {
 				<div className='w-full'>
 					<div className='flex items-center mt-6 px-4'>
 						<div className='justify-center rounded-full bg-green-500 w-16 h-16 p-4 cursor-pointer'>
-							{play ? (
-								<BsFillPauseFill
-									size={36}
-									color='#fff'
-									onClick={handlePause}
-								/>
-							) : (
+							{status !== 'album' ? (
 								<BsFillPlayFill
 									size={36}
 									color='#fff'
-									onClick={
-										play !== ''
-											? handlePause
-											: () => playSong(allUri())
+									onClick={() =>
+										status !== 'album' && playSong(allUri())
 									}
 								/>
+							) : (
+								<>
+									{play ? (
+										<BsFillPauseFill
+											size={36}
+											color='#fff'
+											onClick={handlePause}
+										/>
+									) : (
+										<BsFillPlayFill
+											size={36}
+											color='#fff'
+											onClick={
+												play !== ''
+													? handlePause
+													: () => playSong(allUri())
+											}
+										/>
+									)}
+								</>
 							)}
 						</div>
 						<button className='ml-4 px-4 py-2 font-semibold text-sm text-white bg-transparent rounded-md border-white border-2 border-solid'>
